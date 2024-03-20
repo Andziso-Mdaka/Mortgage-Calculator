@@ -9,11 +9,13 @@ namespace Formative_1
 
     public class MortgageCalculator
     {
+        // Private member variables to store loan details
         private double LoanAmount;
         private double AnnualInterestRate;
         private int LoanTermYears;
         private DateTime LoanStartDate;
 
+        // Constructor to initialize the loan details
         public MortgageCalculator(double LoanAmount, double AnnualInterestRate, int LoanTermYears, DateTime LoanStartDate)
         {
 
@@ -23,27 +25,42 @@ namespace Formative_1
         }
 
 
+        // Method to get the loan amount from the user
         public double GetLoanAmount()
         {
+
+
             Console.WriteLine("How much is your total loan amount?");
             LoanAmount = Convert.ToDouble(Console.ReadLine());
             return LoanAmount;
         }
 
+        // Method to get the annual interest rate from the user
         public double GetAnnualInterestRate()
         {
             Console.WriteLine("What is your annual interest rate?");
             AnnualInterestRate = Convert.ToDouble(Console.ReadLine());
+            if (AnnualInterestRate == 0 ) {
+                Console.WriteLine("Interest rate cannot be 0");
+                GetAnnualInterestRate();
+            }
             return AnnualInterestRate;
         }
 
+        // Method to get the loan term in years from the user
         public int GetLoanTermYears()
         {
             Console.WriteLine("What is the term of the loan in years?");
             LoanTermYears = Convert.ToInt32(Console.ReadLine());
+            if (LoanTermYears == 0)
+            {
+                Console.WriteLine("Loan term years cannot be 0");
+                GetLoanTermYears();
+            }
             return LoanTermYears;
         }
 
+        // Method to get the loan start date from the user
         public DateTime GetLoanStartDate()
         {
             Console.WriteLine("When do you want to start the loan?");
@@ -54,7 +71,7 @@ namespace Formative_1
 
         }
 
-
+        // Method to calculate the monthly repayment amount
         public double CalculateMonthlyRepayment()
         {
             double monthlyInterestRate = AnnualInterestRate / (100 * 12);
@@ -66,6 +83,7 @@ namespace Formative_1
             return monthlyRepayment;
         }
 
+        // Method to calculate the total interest paid over the loan term
         public double CalculateTotalInterestPaid()
         {
 
@@ -77,6 +95,7 @@ namespace Formative_1
 
         }
 
+        // Method to calculate the total amount paid over the loan term
         public double CalculateTotalAmountPaid(out DateTime endDate)
         {
             double totalAmountPaid = LoanAmount + CalculateTotalInterestPaid();
@@ -88,12 +107,60 @@ namespace Formative_1
             return totalAmountPaid;
         }
 
+        // Class to represent each entry in the amortization schedule
+        public class AmortizationEntry
+        {
+            public int PaymentNumber { get; set; }
+            public double PaymentAmount { get; set; }
+            public double InterestPaid { get; set; }
+            public double PrincipalPaid { get; set; }
+            public double RemainingBalance { get; set; }
+        }
+
+        // Method to generate the amortization schedule
+        public List<AmortizationEntry> GenerateAmortizationSchedule()
+        {
+            var schedule = new List<AmortizationEntry>();
+            double monthlyInterestRate = AnnualInterestRate / (100 * 12);
+            double numberOfPayments = LoanTermYears * 12;
+            double monthlyRepayment = CalculateMonthlyRepayment();
+            double remainingBalance = LoanAmount;
+
+            for (int i = 1; i <= numberOfPayments; i++)
+            {
+                double interestPaid = remainingBalance * monthlyInterestRate;
+                double principalPaid = monthlyRepayment - interestPaid;
+                remainingBalance -= principalPaid;
+
+                schedule.Add(new AmortizationEntry
+                {
+                    PaymentNumber = i,
+                    PaymentAmount = monthlyRepayment,
+                    InterestPaid = interestPaid,
+                    PrincipalPaid = principalPaid,
+                    RemainingBalance = remainingBalance
+                });
+            }
+
+            return schedule;
+        }
 
 
+        // Method to print the amortization schedule
+        public static void PrintAmortizationSchedule(List<AmortizationEntry> schedule)
+        {
+            Console.WriteLine("{0,-15}{1,-15}{2,-15}{3,-15}{4,-15}", "Payment #", "Payment", "Interest", "Principal", "Balance");
 
+            foreach (var entry in schedule)
+            {
+                Console.WriteLine("{0,-15}{1,-15:C}{2,-15:C}{3,-15:C}{4,-15:C}", entry.PaymentNumber, entry.PaymentAmount, entry.InterestPaid, entry.PrincipalPaid, entry.RemainingBalance);
+            }
+        }
 
+        // Main method to initiate the program
         static void Main(string[] args)
         {
+            // Create an instance of MortgageCalculator
             MortgageCalculator user = new MortgageCalculator(1, 1, 1, DateTime.Now);
 
             Console.WriteLine("Mortgage Calculator");
@@ -103,6 +170,7 @@ namespace Formative_1
 
             if (ans == "1")
             {
+                // Get loan details from the user
                 user.GetLoanAmount();
                 Console.WriteLine(" ");
                 user.GetAnnualInterestRate();
@@ -116,18 +184,22 @@ namespace Formative_1
 
             else if (ans == "2")
             {
+                // Exit the program
                 System.Environment.Exit(0);
             }
 
             else
             {
+                // Prompt for correct input
                 Console.WriteLine("Incorrect Input, Try again.");
                 Main(args);
             }
 
+            // Call the Section2 method to provide further options to the user
             Section2();
 
-             void Section2()
+            // Method to handle the user's choice after entering loan details
+            void Section2()
             {
                 Console.WriteLine("What would you like to do next?");
                 Console.WriteLine("1. Check Monthly Repayment");
@@ -153,7 +225,8 @@ namespace Formative_1
                         Section2();
                         break;
                     case "4":
-                        Console.WriteLine("Amortization schedule feature is not implemented yet.");
+                        var schedule = user.GenerateAmortizationSchedule();
+                        PrintAmortizationSchedule(schedule);
                         Section2();
                         break;
                     case "5":
