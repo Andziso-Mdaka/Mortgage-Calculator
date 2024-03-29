@@ -32,6 +32,12 @@ namespace Formative_1
 
             Console.WriteLine("How much is your total loan amount?");
             LoanAmount = Convert.ToDouble(Console.ReadLine());
+            if (LoanAmount <= 0) {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("loan amount cannot be 0 or less");
+                Console.ResetColor();
+                GetLoanAmount();
+            }
             return LoanAmount;
         }
 
@@ -40,8 +46,10 @@ namespace Formative_1
         {
             Console.WriteLine("What is your annual interest rate?");
             AnnualInterestRate = Convert.ToDouble(Console.ReadLine());
-            if (AnnualInterestRate == 0 ) {
-                Console.WriteLine("Interest rate cannot be 0");
+            if (AnnualInterestRate <= 0 ) {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Interest rate cannot be 0 or less");
+                Console.ResetColor();
                 GetAnnualInterestRate();
             }
             return AnnualInterestRate;
@@ -52,9 +60,11 @@ namespace Formative_1
         {
             Console.WriteLine("What is the term of the loan in years?");
             LoanTermYears = Convert.ToInt32(Console.ReadLine());
-            if (LoanTermYears == 0)
+            if (LoanTermYears <= 0)
             {
-                Console.WriteLine("Loan term years cannot be 0");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Loan term years cannot be 0 or less");
+                Console.ResetColor();
                 GetLoanTermYears();
             }
             return LoanTermYears;
@@ -78,7 +88,9 @@ namespace Formative_1
             double numberOfPayments = LoanTermYears * 12;
 
             double monthlyRepayment = LoanAmount * monthlyInterestRate / (1 - Math.Pow(1 + monthlyInterestRate, -numberOfPayments));
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine($"Your monthly repayment amount is: {monthlyRepayment:C}");
+            Console.ResetColor();
             Console.WriteLine(" ");
             return monthlyRepayment;
         }
@@ -88,7 +100,10 @@ namespace Formative_1
         {
 
             double totalInterestPaid = CalculateMonthlyRepayment() * LoanTermYears * 12 - LoanAmount;
+
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine($"Total interest paid over the loan term is: {totalInterestPaid:C}");
+            Console.ResetColor();
             Console.WriteLine(" ");
 
             return totalInterestPaid;
@@ -101,8 +116,10 @@ namespace Formative_1
             double totalAmountPaid = LoanAmount + CalculateTotalInterestPaid();
 
             endDate = LoanStartDate.AddYears(LoanTermYears);
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine($"Total amount paid over the loan term is: {totalAmountPaid:C}");
             Console.WriteLine($"You will finish paying on: {endDate:yyyy/MM/dd}");
+            Console.ResetColor();
             Console.WriteLine(" ");
             return totalAmountPaid;
         }
@@ -191,7 +208,9 @@ namespace Formative_1
             else
             {
                 // Prompt for correct input
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Incorrect Input, Try again.");
+                Console.ResetColor();
                 Main(args);
             }
 
@@ -233,18 +252,18 @@ namespace Formative_1
                         System.Environment.Exit(0);
                         break;
                     default:
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Incorrect Input, Try again.");
+                        Console.ResetColor();
                         Section2();
                         break;
                 }
             }
 
-        
-
-
-
+       
         }
-
 
     }
 }
+
+
